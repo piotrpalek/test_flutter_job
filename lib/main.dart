@@ -1,6 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:android_job_scheduler/android_job_scheduler.dart';
 
-void main() => runApp(new MyApp());
+void iRunPeriodically() {
+  print('This gets run periodically by the Android JobScheduler API. '
+      'Even when the App is not running. '
+      'The Timings are not guaranteed to be exact by the Android OS, though.');
+}
+
+void main() async {
+  bool jobIsInstalled =
+      // For every distinct Job you wish to create, set a new JobId.
+      // Calling this Function twice with the same JobId will have no effect.
+      await AndroidJobScheduler.scheduleEvery(
+          const Duration(seconds: 10), 42, iRunPeriodically);
+  print(jobIsInstalled);
+  final List<AndroidJobInfo> pendingJobs =
+      await AndroidJobScheduler.getAllPendingJobs();
+  print(pendingJobs.map((AndroidJobInfo i) => i.id).toList().join(", "));
+  runApp(new MyApp());
+}
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
